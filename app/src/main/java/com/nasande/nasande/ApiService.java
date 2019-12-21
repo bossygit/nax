@@ -19,6 +19,13 @@ public interface ApiService {
     //@Headers({"Content-type: application/json"})
     //Call<ResponseBody> loginRequest(@Body LoginData body);
 
+    @Multipart
+    @POST("upload")
+    Call<ResponseBody> upload(
+            @Part("description") RequestBody description,
+            @Part MultipartBody.Part file
+    );
+
 
     @POST ("file/upload/node/article/field_image?_format=json")
     Call<ResponseBody> postFile (@Header("Authorization") String authorization,@Header("X-CSRF-Token") String x_csrf_token, @Body RequestBody field_image);

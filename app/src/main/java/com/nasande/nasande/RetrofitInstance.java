@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitInstance {
 
     public ApiService ObtenirInstance(){
-        String API_BASE_URL = "http://nasande.cg";
+        String API_BASE_URL = "http://nasande.cg/";
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
