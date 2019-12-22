@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             public void onClick(View view) {
                 Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
                 chooseFile.setType("*/*");
-                chooseFile = Intent.createChooser(chooseFile, "Choose a file");
+                chooseFile = Intent.createChooser(chooseFile, "Choisir un fichier");
                 startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
             }
         });
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     fileUri = data.getData();
                     filePath = fileUri.getPath();
                     tvItemPath.setText(filePath);
+                    fileUpload(fileUri);
                 }
 
                 break;
