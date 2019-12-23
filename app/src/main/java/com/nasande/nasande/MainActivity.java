@@ -2,6 +2,7 @@ package com.nasande.nasande;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private ApiService mApiInstance;
 
+    ProgressDialog mProgressDialog;
+
 
 
     @Override
@@ -43,6 +46,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         btnChooseFile = (Button) findViewById(R.id.btn_choose_file);
         tvItemPath = (TextView) findViewById(R.id.tv_file_path);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage("Envois ...");
+        mProgressDialog.show();
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +88,20 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 
+
+    public void showDialog() {
+
+        if(mProgressDialog != null && !mProgressDialog.isShowing())
+            mProgressDialog.show();
+    }
+
+    public void hideDialog() {
+
+        if(mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
+    }
     public void fileUpload(Uri fileUri){
+        showDialog();
        File file = new File(fileUri.getPath());
       mApiInstance = new RetrofitInstance().ObtenirInstance();
         // create RequestBody instance from file
@@ -105,11 +125,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
+                hideDialog();
                 Log.v("Upload", "success");
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                hideDialog();
                 Log.e("Upload error:", t.getMessage());
             }
         });
