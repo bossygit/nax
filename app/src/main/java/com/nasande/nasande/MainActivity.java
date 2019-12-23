@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Envois ...");
-        mProgressDialog.show();
+     
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
             @Override
