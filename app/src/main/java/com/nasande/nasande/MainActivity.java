@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private ApiService mApiInstance;
 
+    SharedPrefManager sharedPrefManager;
+
     ProgressDialog mProgressDialog;
 
 
@@ -43,6 +45,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPrefManager = new SharedPrefManager(this);
+
+        if (!sharedPrefManager.getSPIsLoggedIn()) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         btnChooseFile = (Button) findViewById(R.id.btn_choose_file);
         tvItemPath = (TextView) findViewById(R.id.tv_file_path);

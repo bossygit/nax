@@ -15,9 +15,9 @@ import retrofit2.http.Path;
 
 public interface ApiService {
 
-    //@POST("user/login?_format=json")
-    //@Headers({"Content-type: application/json"})
-    //Call<ResponseBody> loginRequest(@Body LoginData body);
+    @POST("user/login?_format=json")
+    @Headers({"Content-type: application/json"})
+    Call<ResponseBody> loginRequest(@Body LoginData body);
 
     @Multipart
     @POST("upload")
