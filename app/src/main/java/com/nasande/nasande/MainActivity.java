@@ -1,23 +1,37 @@
 package com.nasande.nasande;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     SharedPrefManager sharedPrefManager;
 
     ProgressDialog mProgressDialog;
+    private String content_disposition;
+    private RequestBody requestBodyByte;
 
 
 
@@ -61,16 +77,89 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                showDialog();
+                sendFile();
+
+
+
+                /*
                 Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-                chooseFile.setType("*/*");
+                chooseFile.setType("*//*");
                 chooseFile = Intent.createChooser(chooseFile, "Choisir un fichier");
                 startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
+                */
             }
         });
     }
+    @AfterPermissionGranted(1000)
+    private void sendFile(){
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if(EasyPermissions.hasPermissions(MainActivity.this,perms)){
 
+            Toast.makeText(MainActivity.this, "Permissions granted", Toast.LENGTH_SHORT).show();
+
+        }
+
+        else {
+            EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de recupere le fichier",1000,perms);
+        }
+
+        mApiInstance = new RetrofitInstance().ObtenirInstance();
+        String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
+        File file = new File(fileName);
+        content_disposition = "file;filename=\"" + "carlos.jpg" + "\"";
+
+        try {
+            InputStream fileInputStream = new FileInputStream(
+                    fileName);
+            byte[] buf = new byte[fileInputStream.available()];
+            while (fileInputStream.read(buf) != -1) ;
+            requestBodyByte = RequestBody
+                    .create(MediaType.parse("application/octet-stream"), buf);
+
+        } catch (FileNotFoundException e) {
+            hideDialog();
+            e.printStackTrace();
+        } catch (IOException e) {
+            hideDialog();
+            e.printStackTrace();
+        }
+        Call<ResponseBody> call = mApiInstance.postFile(sharedPrefManager.getSPBasicAuth(),sharedPrefManager.getSPCsrfToken(),content_disposition,requestBodyByte);
+        call.enqueue(new Callback<ResponseBody>(){
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                    hideDialog();
+                    try {
+                        JSONObject jsonRESULTS = new JSONObject(response.body().string());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                else {
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    hideDialog();
+
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Failure", Toast.LENGTH_SHORT).show();
+                hideDialog();
+
+            }
+        });
+    }
 
     @Override
     public void onPermissionsGranted(int requestCode, List perms) {
@@ -80,6 +169,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onPermissionsDenied(int requestCode, List perms) {
         // Add your logic here
+        if(EasyPermissions.somePermissionPermanentlyDenied(this,perms)){
+            new AppSettingsDialog.Builder(this).build().show();
+        }
     }
 
     @Override
@@ -113,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         showDialog();
        File file = new File(fileUri.getPath());
       mApiInstance = new RetrofitInstance().ObtenirInstance();
+      String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
         // create RequestBody instance from file
         RequestBody requestFile =
                 RequestBody.create(
