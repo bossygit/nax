@@ -45,9 +45,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private TextView tvItemPath;
 
     private Uri fileUri;
+    private int GALLERY_INTENT_CALLED = 108;
     private String filePath;
 
     private ApiService mApiInstance;
+    private static final int GALLERY_KITKAT_INTENT_CALLED = 207;
+
+    private static int compte;
 
     SharedPrefManager sharedPrefManager;
 
@@ -81,21 +85,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onClick(View view) {
                 showDialog();
-                sendFile();
 
 
 
-                /*
-                Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-                chooseFile.setType("*//*");
-                chooseFile = Intent.createChooser(chooseFile, "Choisir un fichier");
-                startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
-                */
+                if (Build.VERSION.SDK_INT <19){
+                    Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                    chooseFile.setType("image/*");
+                    chooseFile = Intent.createChooser(chooseFile, "Choisir un fichier");
+                    startActivityForResult(chooseFile, PICKFILE_RESULT_CODE);
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("image/*");
+
+                    startActivityForResult(intent, GALLERY_KITKAT_INTENT_CALLED);
+                }
+
+
+
+
             }
         });
     }
     @AfterPermissionGranted(1000)
-    private void sendFile(){
+    private void sendFile(String filePath){
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if(EasyPermissions.hasPermissions(MainActivity.this,perms)){
 
@@ -111,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
         File file = new File(fileName);
         content_disposition = "file;filename=\"" + "carlos.jpg" + "\"";
+
+
 
         try {
             InputStream fileInputStream = new FileInputStream(
@@ -176,16 +191,34 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PICKFILE_RESULT_CODE:
                 if (resultCode == -1) {
                     fileUri = data.getData();
                     filePath = fileUri.getPath();
                     tvItemPath.setText(filePath);
-                    fileUpload(fileUri);
+                    //fileUpload(fileUri);
+                    Toast.makeText(MainActivity.this, "Lower 19", Toast.LENGTH_SHORT).show();
                 }
 
                 break;
+
+            case GALLERY_KITKAT_INTENT_CALLED:
+
+
+
+                FilesHelper fH = new FilesHelper();
+                fileUri = data.getData();
+
+                String file = fH.sendPath(fileUri,MainActivity.this);
+
+                tvItemPath.setText(file);
+                sendFile(file);
+
+                break;
+            default:
+                Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_SHORT).show();
         }
     }
 
