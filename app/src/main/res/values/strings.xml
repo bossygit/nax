@@ -3,4 +3,6 @@
     <string name="nsd_pick">Selectionnez le fichier</string>
     <string name="nsd_btn_connexion">Se connecter</string>
     <string name="nsd_edt_id">Identifiant</string>
+    <string name="nsd_get_audio">Selectionner un fichier mp3</string>
+
 </resources>
