@@ -128,7 +128,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mApiInstance = new RetrofitInstance().ObtenirInstance();
         String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
         File file = new File(filePath);
-        content_disposition = "file;filename=\"" + "carlos.jpg" + "\"";
+        String filename=filePath.substring(filePath.lastIndexOf("/")+1);
+        content_disposition = "file;filename=\"" + filename + "\"";
 
 
 
