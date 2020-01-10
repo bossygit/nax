@@ -84,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             @Override
             public void onClick(View view) {
-                showDialog();
+                getMyPerms(); /* Got the permission bug removed */
+                showDialog(); //TODO 1 show dialog after permissions are granted
+                //TODO get file name for header
 
 
 
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         });
     }
     @AfterPermissionGranted(1000)
-    private void sendFile(String filePath){
+    private void getMyPerms(){
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if(EasyPermissions.hasPermissions(MainActivity.this,perms)){
 
@@ -119,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         else {
             EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de recupere le fichier",1000,perms);
         }
+    }
+    private void sendFile(String filePath){
+
 
         mApiInstance = new RetrofitInstance().ObtenirInstance();
         String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
@@ -194,34 +199,38 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case PICKFILE_RESULT_CODE:
-                if (resultCode == -1) {
-                    fileUri = data.getData();
-                    filePath = fileUri.getPath();
-                    tvItemPath.setText(filePath);
-                    //fileUpload(fileUri);
-                    Toast.makeText(MainActivity.this, "Lower 19", Toast.LENGTH_SHORT).show();
-                }
+      if(resultCode != RESULT_CANCELED){
+          switch (requestCode) {
+              case PICKFILE_RESULT_CODE:
+                  if (resultCode == -1) {
+                      fileUri = data.getData();
+                      filePath = fileUri.getPath();
+                      tvItemPath.setText(filePath);
+                      //fileUpload(fileUri);
+                      Toast.makeText(MainActivity.this, "Lower 19", Toast.LENGTH_SHORT).show();
+                  }
 
-                break;
+                  break;
 
-            case GALLERY_KITKAT_INTENT_CALLED:
+              case GALLERY_KITKAT_INTENT_CALLED:
+
+
+                      FilesHelper fH = new FilesHelper();
+                      fileUri = data.getData();
+
+                      String file = fH.sendPath(fileUri,MainActivity.this);
+
+                      tvItemPath.setText(file);
+                      sendFile(file);
 
 
 
-                FilesHelper fH = new FilesHelper();
-                fileUri = data.getData();
 
-                String file = fH.sendPath(fileUri,MainActivity.this);
-
-                tvItemPath.setText(file);
-                sendFile(file);
-
-                break;
-            default:
-                Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_SHORT).show();
-        }
+                  break;
+              default:
+                  Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_SHORT).show();
+          }
+      }
     }
 
 
