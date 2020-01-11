@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -163,7 +164,56 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
+
                     Toast.makeText(MainActivity.this, "Success audio", Toast.LENGTH_SHORT).show();
+                    hideDialog();
+                    try {
+                        String reponse = response.body().string();
+                        JSONObject jsonRESULTS = new JSONObject(reponse);
+                        String fid = jsonRESULTS.getJSONArray("fid").getString(0);
+
+                        Log.d("MainActivity",reponse);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                else {
+                    Toast.makeText(MainActivity.this, "Error audio", Toast.LENGTH_SHORT).show();
+                    hideDialog();
+
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Failure", Toast.LENGTH_SHORT).show();
+                hideDialog();
+
+            }
+        });
+    }
+
+    private void createNode(){
+        ArrayList<Title> title = new ArrayList<>();
+        title.add(0, new Title("Titre son"));
+        ArrayList<Fichier>  field_fichier_audio = new ArrayList<>();
+        field_fichier_audio.add(0,new Fichier(21));
+
+        Node node = new Node(title,field_fichier_audio);
+        mApiInstance = new RetrofitInstance().ObtenirInstance();
+
+        Call<ResponseBody> call =  mApiInstance.addNode(sharedPrefManager.getSPBasicAuth(),sharedPrefManager.getSPCsrfToken(),node);
+        call.enqueue(new Callback<ResponseBody>(){
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()){
+                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     hideDialog();
                     try {
                         String reponse = response.body().string();
@@ -177,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
 
                 else {
-                    Toast.makeText(MainActivity.this, "Error audio", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     hideDialog();
 
 
