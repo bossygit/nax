@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     private int sendAudioFile(String filePath){
 
-        fid = 23;
+
 
 
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -173,9 +173,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     try {
                         String reponse = response.body().string();
                         JSONObject jsonRESULTS = new JSONObject(reponse);
-                        fid = jsonRESULTS.getJSONArray("fid").getInt(0);
+                        fid = jsonRESULTS.getJSONArray("fid").getJSONObject(0).getInt("value");
 
-                        Log.d("MainActivity",reponse);
+                        Log.d("MainActivity","Id : " + fid);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         ArrayList<Title> title = new ArrayList<>();
         title.add(0, new Title("Titre son"));
         ArrayList<Fichier>  field_fichier_audio = new ArrayList<>();
-        field_fichier_audio.add(0,new Fichier(fid));
+        field_fichier_audio.add(0,new Fichier(24));
 
         Node node = new Node(title,field_fichier_audio);
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -369,6 +369,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                   tvItemPath.setText(audioFile);
                   int id = sendAudioFile(audioFile);
+                  createNode(id);
 
 
 

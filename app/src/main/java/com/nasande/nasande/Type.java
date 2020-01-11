@@ -4,14 +4,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class Type {
 
-    private String href;
+    private String target_id;
 
-    public Type(String href) {
-        this.href = href;
+    public Type(String target_id) {
+        this.target_id = target_id;
     }
 
-    @SerializedName("href")
+    @SerializedName("target_id")
     public String getTargetId() {
-        return this.href;
+        return this.target_id;
     }
 }
