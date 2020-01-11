@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private Uri fileUri;
     private int GALLERY_INTENT_CALLED = 108;
     private String filePath;
+    private int fid;
 
     private ApiService mApiInstance;
     private static final int GALLERY_KITKAT_INTENT_CALLED = 207;
@@ -133,7 +134,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de recupere le fichier",1000,perms);
         }
     }
-    private void sendAudioFile(String filePath){
+    private int sendAudioFile(String filePath){
+
+        fid = 23;
 
 
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -170,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     try {
                         String reponse = response.body().string();
                         JSONObject jsonRESULTS = new JSONObject(reponse);
-                        String fid = jsonRESULTS.getJSONArray("fid").getString(0);
+                        fid = jsonRESULTS.getJSONArray("fid").getInt(0);
 
                         Log.d("MainActivity",reponse);
 
@@ -188,6 +191,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                 }
 
+
+
             }
 
             @Override
@@ -197,13 +202,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             }
         });
+        return fid;
     }
 
-    private void createNode(){
+    private void createNode(int fid){
+        showDialog();
         ArrayList<Title> title = new ArrayList<>();
         title.add(0, new Title("Titre son"));
         ArrayList<Fichier>  field_fichier_audio = new ArrayList<>();
-        field_fichier_audio.add(0,new Fichier(21));
+        field_fichier_audio.add(0,new Fichier(fid));
 
         Node node = new Node(title,field_fichier_audio);
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -213,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Content created", Toast.LENGTH_SHORT).show();
                     hideDialog();
                     try {
                         String reponse = response.body().string();
@@ -227,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
 
                 else {
-                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error non created", Toast.LENGTH_SHORT).show();
                     hideDialog();
 
 
@@ -361,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                   String audioFile = fH.sendAudioPath(fileUri,MainActivity.this);
 
                   tvItemPath.setText(audioFile);
-                  sendAudioFile(audioFile);
+                  int id = sendAudioFile(audioFile);
 
 
 
