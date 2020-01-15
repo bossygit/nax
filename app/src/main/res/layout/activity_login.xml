@@ -12,7 +12,8 @@
     <LinearLayout
         style="@style/df_row_vertical"
         android:layout_height="match_parent"
-        android:weightSum="12">
+        android:weightSum="12"
+        android:baselineAligned="false">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,10 +21,12 @@
         android:layout_weight="6"
         android:orientation="vertical"
         android:gravity="center">
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/nsd_logo"
             app:srcCompat="@mipmap/ic_launcher" />
     </LinearLayout>
     <LinearLayout
@@ -40,14 +43,15 @@
             android:id="@+id/textInputLayoutUname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+           <com.google.android.material.textfield.TextInputEditText
+               android:id="@+id/username"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="text"
+               android:hint="@string/nsd_edt_id">
 
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="@string/nsd_edt_id" />
+           </com.google.android.material.textfield.TextInputEditText>
+
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -55,21 +59,26 @@
             android:id="@+id/textInputLayoutPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp">
+            android:layout_marginTop="24dp"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true">
 
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:hint="@string/nsd_mdp"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/login_btn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/button"
+            android:textColor="@color/colorWhite"
             android:layout_marginTop="24dp"
             android:text="@string/nsd_btn_connexion" />
 

@@ -7,8 +7,18 @@
     tools:context=".MainActivity">
 
 
+        <EditText
+            android:id="@+id/titre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:layout_marginBottom="27dp"
+            android:hint="@string/nsd_titre" />
+
         <Button
             android:id="@+id/btn_choose_file"
+            android:background="@drawable/button"
             android:text="@string/nsd_pick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

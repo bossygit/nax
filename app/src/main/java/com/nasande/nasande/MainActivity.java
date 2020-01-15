@@ -1,5 +1,6 @@
 package com.nasande.nasande;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,9 +10,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private Button btnChooseFile;
     private TextView tvItemPath;
+    private EditText mTitre;
 
     private Uri fileUri;
     private int GALLERY_INTENT_CALLED = 108;
@@ -64,10 +71,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mApiInstance = new RetrofitInstance().ObtenirInstance();
         sharedPrefManager = new SharedPrefManager(this);
 
         if (!sharedPrefManager.getSPIsLoggedIn()) {
@@ -78,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         btnChooseFile = (Button) findViewById(R.id.btn_choose_file);
         tvItemPath = (TextView) findViewById(R.id.tv_file_path);
+        mTitre = findViewById(R.id.titre);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Envois ...");
@@ -88,7 +98,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onClick(View view) {
                 getMyPerms(); /* Got the permission bug removed */
-                showDialog(); //TODO 1 show dialog after permissions are granted
+                if (TextUtils.isEmpty(mTitre.getText().toString())){
+                    Toast.makeText(MainActivity.this, R.string.nsd_err_titre,
+                    Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
 
 
 
@@ -136,11 +152,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     private int sendAudioFile(String filePath){
 
-
-
-
-        mApiInstance = new RetrofitInstance().ObtenirInstance();
-        String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
+        showDialog();
         File file = new File(filePath);
         String filename=filePath.substring(filePath.lastIndexOf("/")+1);
         content_disposition = "file;filename=\"" + filename + "\"";
@@ -149,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         try {
             InputStream fileInputStream = new FileInputStream(
-                    fileName);
+                    filePath);
             byte[] buf = new byte[fileInputStream.available()];
             while (fileInputStream.read(buf) != -1) ;
             requestBodyByte = RequestBody
@@ -167,15 +179,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
-
-                    Toast.makeText(MainActivity.this, "Success audio", Toast.LENGTH_SHORT).show();
                     hideDialog();
+                    mTitre.getText().clear();
+
+                    Toast.makeText(MainActivity.this, R.string.nsd_success_envois, Toast.LENGTH_SHORT).show();
+
                     try {
                         String reponse = response.body().string();
                         JSONObject jsonRESULTS = new JSONObject(reponse);
                         fid = jsonRESULTS.getJSONArray("fid").getJSONObject(0).getInt("value");
 
                         Log.d("MainActivity","Id : " + fid);
+                        createNode(fid);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -185,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
 
                 else {
-                    Toast.makeText(MainActivity.this, "Error audio", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.nsd_err_envois, Toast.LENGTH_SHORT).show();
                     hideDialog();
 
 
@@ -197,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Failure", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Echec envois fichier", Toast.LENGTH_SHORT).show();
                 hideDialog();
 
             }
@@ -205,12 +220,52 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         return fid;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()){
+            case R.id.menu_help:
+
+                Toast.makeText(MainActivity.this, R.string.nsd_help, Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_compte:
+
+                Toast.makeText(MainActivity.this, R.string.nsd_compte, Toast.LENGTH_SHORT).show();
+                break;
+
+
+            case R.id.menu_logout:
+
+                sharedPrefManager.efface();
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+                break;
+
+
+
+            default:
+                return true;
+
+        }
+        return true;
+    }
+
     private void createNode(int fid){
         showDialog();
         ArrayList<Title> title = new ArrayList<>();
-        title.add(0, new Title("Titre son"));
+        String titre = mTitre.getText().toString();
+        title.add(0, new Title(titre));
         ArrayList<Fichier>  field_fichier_audio = new ArrayList<>();
-        field_fichier_audio.add(0,new Fichier(24));
+        field_fichier_audio.add(0,new Fichier(fid));
 
         Node node = new Node(title,field_fichier_audio);
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -220,11 +275,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Content created", Toast.LENGTH_SHORT).show();
                     hideDialog();
+                    Toast.makeText(MainActivity.this, R.string.nsd_success_node, Toast.LENGTH_SHORT).show();
+
                     try {
                         String reponse = response.body().string();
-                        Log.d("MainActivity",reponse);
                         JSONObject jsonRESULTS = new JSONObject(reponse);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -369,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                   tvItemPath.setText(audioFile);
                   int id = sendAudioFile(audioFile);
-                  createNode(id);
+
 
 
 

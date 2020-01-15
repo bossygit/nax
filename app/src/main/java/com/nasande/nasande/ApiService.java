@@ -10,12 +10,17 @@ import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
 
     @POST("user/login?_format=json")
     @Headers({"Content-type: application/json"})
     Call<ResponseBody> loginRequest(@Body LoginData body);
+
+    @POST("user/logout")
+    Call<ResponseBody> logoutRequest(@Query("token") String token);
 
     @Multipart
     @POST("upload")

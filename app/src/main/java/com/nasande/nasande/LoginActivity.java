@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,9 +25,10 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText mUserView;
-    private EditText mPasswordView;
+    private TextInputEditText mUserView;
+    private TextInputEditText mPasswordView;
     private Button mConnexion;
+
     SharedPrefManager sharedPrefManager;
     private ApiService mApiInstance;
     ProgressDialog mProgressDialog;
@@ -71,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
+        showDialog();
         final String email = mUserView.getText().toString().trim();
         final String password = mPasswordView.getText().toString().trim();
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -80,13 +84,16 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.isSuccessful()) {
+                            hideDialog();
 
                             try {
                                 JSONObject jsonRESULTS = new JSONObject(response.body().string());
                                 if (!jsonRESULTS.getString("csrf_token").isEmpty()) {
                                     String csrf_token = jsonRESULTS.getString("csrf_token");
+                                    String logout_token = jsonRESULTS.getString("logout_token");
                                     String user_id = jsonRESULTS.getJSONObject("current_user").getString("uid");
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_CSRF_TOKEN, csrf_token);
+                                    sharedPrefManager.saveSPString(SharedPrefManager.SP_LOGOUT_TOKEN, logout_token);
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_USER_ID, user_id);
                                     sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_IS_LOGGED_IN, true);
                                     String basic_auth = email + ":" + password;

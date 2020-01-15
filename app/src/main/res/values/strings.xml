@@ -2,7 +2,18 @@
     <string name="app_name">Nasande</string>
     <string name="nsd_pick">Selectionnez le fichier</string>
     <string name="nsd_btn_connexion">Se connecter</string>
+    <string name="nsd_logout">Déconnexion</string>
     <string name="nsd_edt_id">Identifiant</string>
     <string name="nsd_get_audio">Selectionner un fichier mp3</string>
+    <string name="nsd_mdp">Mot de passe</string>
+    <string name="nsd_logo">Logo nasande</string>
+    <string name="nsd_upload">Envoyer fichier</string>
+    <string name="nsd_help">Aide</string>
+    <string name="nsd_compte">Compte</string>
+    <string name="nsd_err_envois">Erreur sur l\'envois du fichier</string>
+    <string name="nsd_success_envois">Fichier envoyé</string>
+    <string name="nsd_titre">Titre de la chanson</string>
+    <string name="nsd_err_titre">Veuillez donner le titre de la chanson</string>
+    <string name="nsd_success_node">Contenu crée</string>
 
 </resources>

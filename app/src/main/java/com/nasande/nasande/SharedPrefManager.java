@@ -13,6 +13,10 @@ public class SharedPrefManager {
     public static final String SP_USER_ID = "spUserId";
     public static final String SP_BASIC_AUTH = "spBasicAuth";
 
+
+
+    public static final String SP_LOGOUT_TOKEN = "spLogoutToken";
+
     public static final String SP_IS_LOGGED_IN = "spIsLoggedLogin";
 
     SharedPreferences sp;
@@ -55,11 +59,20 @@ public class SharedPrefManager {
         return sp.getString(SP_CSRF_TOKEN, "");
     }
 
+    public String getSpLogoutToken() {
+        return sp.getString(SP_LOGOUT_TOKEN , "");
+    }
+
     public String getSPUserId() {
         return sp.getString(SP_USER_ID, "");
     }
 
     public String getSPBasicAuth() {
         return sp.getString(SP_BASIC_AUTH, "");
+    }
+
+    public void efface(){
+       spEditor.clear();
+       spEditor.commit();
     }
 }

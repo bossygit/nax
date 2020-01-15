@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="@string/nsd_help"
+        android:icon="@drawable/ic_help"
+        android:id="@+id/menu_help"
+        app:showAsAction="ifRoom"/>
+
+    <item android:title="@string/nsd_upload"
+        android:id="@+id/menu_main"
+        app:showAsAction="never"/>
+    <item android:title="@string/nsd_compte"
+        android:id="@+id/menu_compte"
+        app:showAsAction="never"/>
+    <item
+        android:icon="@drawable/ic_power_off"
+        android:title="@string/nsd_logout"
+        android:id="@+id/menu_logout"
+        app:showAsAction="never"/>
+</menu>
