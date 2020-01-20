@@ -1,7 +1,6 @@
 package com.nasande.nasande;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -21,6 +20,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nasande.nasande.model.Fichier;
+import com.nasande.nasande.model.Node;
+import com.nasande.nasande.model.Title;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 

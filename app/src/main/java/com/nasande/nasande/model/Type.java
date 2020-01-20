@@ -1,4 +1,4 @@
-package com.nasande.nasande;
+package com.nasande.nasande.model;
 
 import com.google.gson.annotations.SerializedName;
 

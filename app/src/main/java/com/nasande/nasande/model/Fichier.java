@@ -1,4 +1,4 @@
-package com.nasande.nasande;
+package com.nasande.nasande.model;
 
 public class Fichier {
 

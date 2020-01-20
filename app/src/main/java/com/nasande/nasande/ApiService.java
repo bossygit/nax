@@ -1,5 +1,8 @@
 package com.nasande.nasande;
 
+import com.nasande.nasande.model.Node;
+import com.nasande.nasande.model.Notification;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -10,7 +13,6 @@ import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -38,6 +40,10 @@ public interface ApiService {
 
     @POST("/node?_format=hal_json")
     Call<ResponseBody> addNode(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body Node node);
+
+    @POST("/node?_format=hal_json")
+    Call<ResponseBody> addNotif(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body Notification notification);
+
 
     //@POST("file/upload/node/article/field_image?_format=hal_json")
     //Call<ResponseBody> addNode(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body Node node);

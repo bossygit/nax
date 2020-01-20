@@ -1,11 +1,6 @@
-package com.nasande.nasande;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+package com.nasande.nasande.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Node {
     ArrayList<Type> type;
