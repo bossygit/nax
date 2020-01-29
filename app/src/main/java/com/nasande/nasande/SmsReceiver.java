@@ -71,37 +71,6 @@ public class SmsReceiver extends BroadcastReceiver {
 
             mApiInstance = new RetrofitInstance().ObtenirInstance();
 
-            Call<ResponseBody> call =  mApiInstance.addNotif(sharedPrefManager.getSPBasicAuth(),sharedPrefManager.getSPCsrfToken(),notification);
-            call.enqueue(new Callback<ResponseBody>(){
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()){
-
-
-                        try {
-                            String reponse = response.body().string();
-                            JSONObject jsonRESULTS = new JSONObject(reponse);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    else {
-                        Log.e(TAG,"Erreur 2");
-
-
-
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.d(TAG, "Erreur 1");
-                }
-            });
         }
 
     }

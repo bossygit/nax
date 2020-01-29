@@ -19,6 +19,10 @@ public class SharedPrefManager {
 
     public static final String SP_IS_LOGGED_IN = "spIsLoggedLogin";
 
+    public static final String SP_SONG_ID = "spSongId";
+
+
+
     SharedPreferences sp;
     SharedPreferences.Editor spEditor;
 
@@ -61,6 +65,10 @@ public class SharedPrefManager {
 
     public String getSpLogoutToken() {
         return sp.getString(SP_LOGOUT_TOKEN , "");
+    }
+
+    public String getSpSongId() {
+        return sp.getString(SP_SONG_ID , "");
     }
 
     public String getSPUserId() {

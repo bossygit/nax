@@ -1,6 +1,6 @@
 package com.nasande.nasande;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -9,11 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private Button btnChooseFile;
     private TextView tvItemPath;
     private EditText mTitre;
+    SharedPrefManager sharedPrefManager;
 
     private Uri fileUri;
     private int GALLERY_INTENT_CALLED = 108;
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     private static int compte;
 
-    SharedPrefManager sharedPrefManager;
+
 
     ProgressDialog mProgressDialog;
     private String content_disposition;
@@ -73,12 +71,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mApiInstance = new RetrofitInstance().ObtenirInstance();
         sharedPrefManager = new SharedPrefManager(this);
 
         if (!sharedPrefManager.getSPIsLoggedIn()) {
@@ -93,20 +89,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Envois ...");
-     
+
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 getMyPerms(); /* Got the permission bug removed */
-                if (TextUtils.isEmpty(mTitre.getText().toString())){
-                    Toast.makeText(MainActivity.this, R.string.nsd_err_titre,
-                    Toast.LENGTH_SHORT).show();
-
-                    return;
-                }
-
+                showDialog(); //TODO 1 show dialog after permissions are granted
 
 
 
@@ -123,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("image/*");
                     startActivityForResult(intent, GALLERY_KITKAT_INTENT_CALLED);
-
                      */
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -154,7 +143,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     private int sendAudioFile(String filePath){
 
-        showDialog();
+
+
+
+        mApiInstance = new RetrofitInstance().ObtenirInstance();
+        //String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
         File file = new File(filePath);
         String filename=filePath.substring(filePath.lastIndexOf("/")+1);
         content_disposition = "file;filename=\"" + filename + "\"";
@@ -181,18 +174,32 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
+
+                    Toast.makeText(MainActivity.this, "Success audio", Toast.LENGTH_SHORT).show();
                     hideDialog();
-                    mTitre.getText().clear();
-
-                    Toast.makeText(MainActivity.this, R.string.nsd_success_envois, Toast.LENGTH_SHORT).show();
-
                     try {
                         String reponse = response.body().string();
                         JSONObject jsonRESULTS = new JSONObject(reponse);
                         fid = jsonRESULTS.getJSONArray("fid").getJSONObject(0).getInt("value");
 
-                        Log.d("MainActivity","Id : " + fid);
+                        sharedPrefManager.saveSPString(SharedPrefManager.SP_SONG_ID, ""+ fid);
+
                         createNode(fid);
+
+
+
+                        SmsRequest smsRequest = new SmsRequest();
+                        int rd = (int )(Math.random() * 1 + 6);
+                        String sender = "06" + rd ;
+                        String devise = "FCFA";
+                        String montant = "300";
+                        String trans_id = "0000";
+                        String fname = "Not defined";
+                        String lname = "Not defined";
+
+                        smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id, MainActivity.this);
+
+                        Log.d("MainActivity","Id : " + fid);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -202,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
 
                 else {
-                    Toast.makeText(MainActivity.this, R.string.nsd_err_envois, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error audio", Toast.LENGTH_SHORT).show();
                     hideDialog();
 
 
@@ -214,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Echec envois fichier", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Failure", Toast.LENGTH_SHORT).show();
                 hideDialog();
 
             }
@@ -222,52 +229,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         return fid;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent;
-        switch (item.getItemId()){
-            case R.id.menu_help:
-
-                Toast.makeText(MainActivity.this, R.string.nsd_help, Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.menu_compte:
-
-                Toast.makeText(MainActivity.this, R.string.nsd_compte, Toast.LENGTH_SHORT).show();
-                break;
-
-
-            case R.id.menu_logout:
-
-                sharedPrefManager.efface();
-                Intent i = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(i);
-                finish();
-                break;
-
-
-
-            default:
-                return true;
-
-        }
-        return true;
-    }
-
     private void createNode(int fid){
         showDialog();
         ArrayList<Title> title = new ArrayList<>();
-        String titre = mTitre.getText().toString();
-        title.add(0, new Title(titre));
+
+        title.add(0, new Title(mTitre.getText().toString()));
         ArrayList<Fichier>  field_fichier_audio = new ArrayList<>();
-        field_fichier_audio.add(0,new Fichier(fid));
+        field_fichier_audio.add(0,new Fichier(24));
 
         Node node = new Node(title,field_fichier_audio);
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -277,11 +245,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
+                    Toast.makeText(MainActivity.this, "Content created", Toast.LENGTH_SHORT).show();
                     hideDialog();
-                    Toast.makeText(MainActivity.this, R.string.nsd_success_node, Toast.LENGTH_SHORT).show();
-
                     try {
                         String reponse = response.body().string();
+                        Log.d("MainActivity",reponse);
                         JSONObject jsonRESULTS = new JSONObject(reponse);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -386,56 +354,56 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-      if(resultCode != RESULT_CANCELED){
-          FilesHelper fH = new FilesHelper();
-          switch (requestCode) {
-              case PICKFILE_RESULT_CODE:
-                  if (resultCode == -1) {
-                      fileUri = data.getData();
-                      filePath = fileUri.getPath();
-                      tvItemPath.setText(filePath);
-                      //fileUpload(fileUri);
-                      Toast.makeText(MainActivity.this, "Lower 19", Toast.LENGTH_SHORT).show();
-                  }
+        if(resultCode != RESULT_CANCELED){
+            FilesHelper fH = new FilesHelper();
+            switch (requestCode) {
+                case PICKFILE_RESULT_CODE:
+                    if (resultCode == -1) {
+                        fileUri = data.getData();
+                        filePath = fileUri.getPath();
+                        tvItemPath.setText(filePath);
+                        //fileUpload(fileUri);
+                        Toast.makeText(MainActivity.this, "Lower 19", Toast.LENGTH_SHORT).show();
+                    }
 
-                  break;
+                    break;
 
-              case GALLERY_KITKAT_INTENT_CALLED:
-
-
-
-                      fileUri = data.getData();
-
-                      String file = fH.sendPath(fileUri,MainActivity.this);
-
-                      tvItemPath.setText(file);
-                      sendFile(file);
+                case GALLERY_KITKAT_INTENT_CALLED:
 
 
 
+                    fileUri = data.getData();
 
-                  break;
+                    String file = fH.sendPath(fileUri,MainActivity.this);
 
-              case REQ_CODE_PICK_SOUNDFILE:
-
-
-
-                  fileUri = data.getData();
-
-                  String audioFile = fH.sendAudioPath(fileUri,MainActivity.this);
-
-                  tvItemPath.setText(audioFile);
-                  int id = sendAudioFile(audioFile);
+                    tvItemPath.setText(file);
+                    sendFile(file);
 
 
 
 
+                    break;
 
-                  break;
-              default:
-                  Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_SHORT).show();
-          }
-      }
+                case REQ_CODE_PICK_SOUNDFILE:
+
+
+
+                    fileUri = data.getData();
+
+                    String audioFile = fH.sendAudioPath(fileUri,MainActivity.this);
+
+                    tvItemPath.setText(audioFile);
+                    int id = sendAudioFile(audioFile);
+
+
+
+
+
+                    break;
+                default:
+                    Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 
@@ -452,9 +420,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     public void fileUpload(Uri fileUri){
         showDialog();
-       File file = new File(fileUri.getPath());
-      mApiInstance = new RetrofitInstance().ObtenirInstance();
-      String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
+        File file = new File(fileUri.getPath());
+        mApiInstance = new RetrofitInstance().ObtenirInstance();
+        String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
         // create RequestBody instance from file
         RequestBody requestFile =
                 RequestBody.create(
