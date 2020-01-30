@@ -23,6 +23,7 @@ public class SmsRequest {
     }
 
     public static final String URL_POST = "http://nasande.cg/process";
+    public static final String URL_FICHIER = "http://nasande.cg/fichier";
     public static final String SUCCESS_MSG = "Transfert reçu, Cliquez sur continuer à l'étape suivante. Merci pour la confiance. \n - Nasande.cg";
     private static final String TAG = SmsRequest.class.getSimpleName();
     private static final int MY_SOCKET_TIMEOUT_MS = 6000;
@@ -30,12 +31,16 @@ public class SmsRequest {
     private static String senderAddress = null;
     private static String devise = null;
     private static String montant = null;
+    private static String numero = null;
+    private static String titre = null;
+    private static String songId = "";
     private static String service = null;
     private static String trans = null;
     private static String fname = null;
     private static String lname = null;
+    private static String identifiant = null;
 
-    public void moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id, Context context) {
+    public String moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id, Context context) {
         message = msg;
         senderAddress = sender;
         devise = currency;
@@ -52,12 +57,12 @@ public class SmsRequest {
                             int i = jObj.getInt("success");
                             if(i == 1){
                                 String pass = jObj.getString("pass");
-                                String identifiant = jObj.getString("numero");
+                                identifiant = jObj.getString("numero");
                                 String mess = "Rendez-vous sur https://nasande.cg/user/login pour vous connecter. Nom d'utilisteur : "+identifiant +" Mot de passe : "+pass +" .Merci pour la confiance. \n -Nasande.cg";
                                 Log.d(TAG,"Taille "+ mess.length() +" Password" +pass +"identifiant "+identifiant );
                                 Log.d(TAG,mess);
-
                             }
+
                         } catch (JSONException e) {
 
                             e.printStackTrace();
@@ -81,6 +86,58 @@ public class SmsRequest {
                 params.put("montant", montant);
                 params.put("operator", service);
                 params.put("trans_id", trans);
+
+                return params;
+            }
+        };
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        Volley.newRequestQueue(context).add(postRequest);
+
+        return identifiant;
+    }
+
+    public void createFichier(String number, String title,String idSong, Context context){
+
+        numero = number;
+        titre = title;
+        songId = idSong;
+
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, URL_FICHIER,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jObj = new JSONObject(response);
+                            int i = jObj.getInt("success");
+                            if(i == 1){
+
+
+
+                            }
+                        } catch (JSONException e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+
+                params.put("numero", numero);
+                params.put("titre", titre);
+                params.put("id", songId);
 
                 return params;
             }

@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         fid = jsonRESULTS.getJSONArray("fid").getJSONObject(0).getInt("value");
 
                         sharedPrefManager.saveSPString(SharedPrefManager.SP_SONG_ID, ""+ fid);
+                        sharedPrefManager.saveSPString(SharedPrefManager.SP_SONG_TITLE, mTitre.getText().toString());
 
                         createNode(fid);
 
@@ -197,7 +198,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         String fname = "Not defined";
                         String lname = "Not defined";
 
-                        smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id, MainActivity.this);
+                        String numero = smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id, MainActivity.this);
+                        smsRequest.createFichier(numero,SharedPrefManager.SP_SONG_TITLE,SharedPrefManager.SP_SONG_ID,MainActivity.this);
 
                         Log.d("MainActivity","Id : " + fid);
 

@@ -21,6 +21,8 @@ public class SharedPrefManager {
 
     public static final String SP_SONG_ID = "spSongId";
 
+    public static final String SP_SONG_TITLE = "spSonTitle";
+
 
 
     SharedPreferences sp;
@@ -69,6 +71,10 @@ public class SharedPrefManager {
 
     public String getSpSongId() {
         return sp.getString(SP_SONG_ID , "");
+    }
+
+    public String getSpSongTitle() {
+        return sp.getString(SP_SONG_TITLE , "");
     }
 
     public String getSPUserId() {
