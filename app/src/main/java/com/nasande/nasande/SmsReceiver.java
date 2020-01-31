@@ -47,31 +47,32 @@ public class SmsReceiver extends BroadcastReceiver {
         message = currentMessage.getDisplayMessageBody().toLowerCase();
         String reseau = currentMessage.getDisplayOriginatingAddress();
 
+        SmsRequest smsRequest = new SmsRequest();
+        int rd = (int )(Math.random() * 4788 + 7854);
+        String sender = "06" + rd ;
+        String devise = "FCFA";
+        String montant = "300";
+        String trans_id = "0000";
+        String fname = "Not defined";
+        String lname = "Not defined";
+
+
+        try {
+            JSONObject retour = smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id,SharedPrefManager.SP_USER_ID, context);
+            String numero = retour.getString("numero");
+            String uid = null;
+            uid = retour.getString("user_id");
+            smsRequest.createFichier(numero,SharedPrefManager.SP_SONG_TITLE,SharedPrefManager.SP_SONG_ID,uid,context);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
 
 
         Log.d(TAG, "Message recu");
 
-        if (message.contains("recu") ){
-            Log.d(TAG, "Message mtn");
 
-            CheckSms checkSms = new CheckSms();
-            String numero_expediteur = checkSms.getNumber(message);
-            String montant_recu = checkSms.getAmount(message);
-            String nom_expediteur = checkSms.getAmount(message);
-
-            ArrayList<Title> title = new ArrayList<>();
-            ArrayList<Amount> field_amount = new ArrayList<>();
-            ArrayList<Telephone> field_telephone_number = new ArrayList<>();
-
-            title.add(0,new Title("Transfert recu de " + nom_expediteur));
-            field_amount.add(0,new Amount(montant_recu));
-            field_telephone_number.add(0,new Telephone(numero_expediteur));
-
-            Notification notification = new Notification(title,field_amount,field_telephone_number);
-
-            mApiInstance = new RetrofitInstance().ObtenirInstance();
-
-        }
 
     }
 }

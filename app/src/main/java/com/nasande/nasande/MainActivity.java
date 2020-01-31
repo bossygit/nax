@@ -189,17 +189,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
 
 
-                        SmsRequest smsRequest = new SmsRequest();
-                        int rd = (int )(Math.random() * 1 + 6);
-                        String sender = "06" + rd ;
-                        String devise = "FCFA";
-                        String montant = "300";
-                        String trans_id = "0000";
-                        String fname = "Not defined";
-                        String lname = "Not defined";
 
-                        String numero = smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id, MainActivity.this);
-                        smsRequest.createFichier(numero,SharedPrefManager.SP_SONG_TITLE,SharedPrefManager.SP_SONG_ID,MainActivity.this);
 
                         Log.d("MainActivity","Id : " + fid);
 

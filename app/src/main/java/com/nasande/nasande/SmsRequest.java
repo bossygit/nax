@@ -39,14 +39,17 @@ public class SmsRequest {
     private static String fname = null;
     private static String lname = null;
     private static String identifiant = null;
+    private static String idUser = "1";
+    private static JSONObject retour = null;
 
-    public String moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id, Context context) {
+    public JSONObject moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id,String UserId, Context context) {
         message = msg;
         senderAddress = sender;
         devise = currency;
         montant = amount;
         service = operator;
         trans = trans_id;
+        idUser = UserId;
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, URL_POST,
                 new Response.Listener<String>() {
@@ -58,6 +61,13 @@ public class SmsRequest {
                             if(i == 1){
                                 String pass = jObj.getString("pass");
                                 identifiant = jObj.getString("numero");
+                                idUser = jObj.getString("id");
+
+                                JSONObject retour = new JSONObject()
+                                                    .put("pass",pass)
+                                                    .put("numero",identifiant)
+                                                    .put("id_user",idUser);
+
                                 String mess = "Rendez-vous sur https://nasande.cg/user/login pour vous connecter. Nom d'utilisteur : "+identifiant +" Mot de passe : "+pass +" .Merci pour la confiance. \n -Nasande.cg";
                                 Log.d(TAG,"Taille "+ mess.length() +" Password" +pass +"identifiant "+identifiant );
                                 Log.d(TAG,mess);
@@ -86,6 +96,7 @@ public class SmsRequest {
                 params.put("montant", montant);
                 params.put("operator", service);
                 params.put("trans_id", trans);
+                params.put("user_id", idUser);
 
                 return params;
             }
@@ -96,14 +107,15 @@ public class SmsRequest {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         Volley.newRequestQueue(context).add(postRequest);
 
-        return identifiant;
+        return retour;
     }
 
-    public void createFichier(String number, String title,String idSong, Context context){
+    public void createFichier(String number, String title,String idSong,String uid, Context context){
 
         numero = number;
         titre = title;
         songId = idSong;
+        idUser = uid;
 
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, URL_FICHIER,
@@ -138,6 +150,7 @@ public class SmsRequest {
                 params.put("numero", numero);
                 params.put("titre", titre);
                 params.put("id", songId);
+                params.put("userId", idUser);
 
                 return params;
             }
