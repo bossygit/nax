@@ -47,28 +47,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     public static final int PICKFILE_RESULT_CODE = 1;
     public  static final int REQ_CODE_PICK_SOUNDFILE = 306;
-
     private Button btnChooseFile;
     private TextView tvItemPath;
     private EditText mTitre;
+    private TextView onTitle;
     SharedPrefManager sharedPrefManager;
-
     private Uri fileUri;
     private int GALLERY_INTENT_CALLED = 108;
     private String filePath;
     private int fid;
-
     private ApiService mApiInstance;
     private static final int GALLERY_KITKAT_INTENT_CALLED = 207;
-
     private static int compte;
-
-
-
     ProgressDialog mProgressDialog;
     private String content_disposition;
     private RequestBody requestBodyByte;
-
 
 
     @Override
@@ -89,7 +82,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Envois ...");
+        onTitle = findViewById(R.id.on_title);
 
+        if (sharedPrefManager.SP_SONG_TITLE != "spSonTitle") {
+            onTitle.setText(sharedPrefManager.SP_SONG_TITLE );
+        }
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
 
@@ -97,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             public void onClick(View view) {
                 getMyPerms(); /* Got the permission bug removed */
                 showDialog(); //TODO 1 show dialog after permissions are granted
-
-
 
 
                 if (Build.VERSION.SDK_INT <19){
@@ -143,16 +138,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
     private int sendAudioFile(String filePath){
 
-
-
-
         mApiInstance = new RetrofitInstance().ObtenirInstance();
         //String fileName ="/storage/emulated/0/DCIM/Camera/IMG_20191231_065522.jpg";
         File file = new File(filePath);
         String filename=filePath.substring(filePath.lastIndexOf("/")+1);
         content_disposition = "file;filename=\"" + filename + "\"";
-
-
 
         try {
             InputStream fileInputStream = new FileInputStream(
@@ -187,10 +177,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                         createNode(fid);
 
-
-
-
-
                         Log.d("MainActivity","Id : " + fid);
 
                     } catch (JSONException e) {
@@ -204,10 +190,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     Toast.makeText(MainActivity.this, "Error audio", Toast.LENGTH_SHORT).show();
                     hideDialog();
 
-
                 }
-
-
 
             }
 
@@ -220,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         });
         return fid;
     }
-
     private void createNode(int fid){
         showDialog();
         ArrayList<Title> title = new ArrayList<>();
@@ -238,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
                     Toast.makeText(MainActivity.this, "Content created", Toast.LENGTH_SHORT).show();
+                    mTitre.getText().clear();
                     hideDialog();
                     try {
                         String reponse = response.body().string();
@@ -267,7 +250,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
     }
-
     private void sendFile(String filePath){
 
 
@@ -329,12 +311,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
     }
-
     @Override
     public void onPermissionsGranted(int requestCode, List perms) {
         // Add your logic here
     }
-
     @Override
     public void onPermissionsDenied(int requestCode, List perms) {
         // Add your logic here
@@ -342,7 +322,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             new AppSettingsDialog.Builder(this).build().show();
         }
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -362,34 +341,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                 case GALLERY_KITKAT_INTENT_CALLED:
 
-
-
                     fileUri = data.getData();
-
                     String file = fH.sendPath(fileUri,MainActivity.this);
-
                     tvItemPath.setText(file);
                     sendFile(file);
-
-
-
-
                     break;
 
                 case REQ_CODE_PICK_SOUNDFILE:
 
-
-
                     fileUri = data.getData();
-
                     String audioFile = fH.sendAudioPath(fileUri,MainActivity.this);
-
                     tvItemPath.setText(audioFile);
                     int id = sendAudioFile(audioFile);
-
-
-
-
 
                     break;
                 default:
@@ -397,14 +360,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         }
     }
-
-
     public void showDialog() {
 
         if(mProgressDialog != null && !mProgressDialog.isShowing())
             mProgressDialog.show();
     }
-
     public void hideDialog() {
 
         if(mProgressDialog != null && mProgressDialog.isShowing())
