@@ -84,9 +84,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mProgressDialog.setMessage("Envois ...");
         onTitle = findViewById(R.id.on_title);
 
-        if (sharedPrefManager.SP_SONG_TITLE != "spSonTitle") {
-            onTitle.setText(sharedPrefManager.SP_SONG_TITLE );
-        }
+
+        onTitle.setText(sharedPrefManager.SP_SONG_TITLE );
+
+
+        getSmsPerms();
 
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
 
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
     }
+
     @AfterPermissionGranted(1000)
     private void getMyPerms(){
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -136,6 +139,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de recupere le fichier",1000,perms);
         }
     }
+
+    @AfterPermissionGranted(2000)
+    private void getSmsPerms(){
+        String[] perms = {Manifest.permission.RECEIVE_SMS};
+        if(EasyPermissions.hasPermissions(MainActivity.this,perms)){
+
+            Toast.makeText(MainActivity.this, "Peu recevoir des messages", Toast.LENGTH_SHORT).show();
+
+        }
+
+        else {
+            EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de lire les sms entrant",1000,perms);
+        }
+    }
+
     private int sendAudioFile(String filePath){
 
         mApiInstance = new RetrofitInstance().ObtenirInstance();
@@ -203,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         });
         return fid;
     }
+
     private void createNode(int fid){
         showDialog();
         ArrayList<Title> title = new ArrayList<>();
@@ -250,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
     }
+
     private void sendFile(String filePath){
 
 
@@ -311,10 +331,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
     }
+
     @Override
     public void onPermissionsGranted(int requestCode, List perms) {
         // Add your logic here
     }
+
     @Override
     public void onPermissionsDenied(int requestCode, List perms) {
         // Add your logic here
@@ -322,6 +344,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             new AppSettingsDialog.Builder(this).build().show();
         }
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -360,16 +383,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         }
     }
+
     public void showDialog() {
 
         if(mProgressDialog != null && !mProgressDialog.isShowing())
             mProgressDialog.show();
     }
+
     public void hideDialog() {
 
         if(mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
     }
+
     public void fileUpload(Uri fileUri){
         showDialog();
         File file = new File(fileUri.getPath());

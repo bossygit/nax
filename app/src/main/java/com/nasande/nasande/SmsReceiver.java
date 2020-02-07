@@ -47,6 +47,11 @@ public class SmsReceiver extends BroadcastReceiver {
         message = currentMessage.getDisplayMessageBody().toLowerCase();
         String reseau = currentMessage.getDisplayOriginatingAddress();
 
+       if(message.contains("recu") && (reseau.equalsIgnoreCase("MobileMoeny") || reseau.equalsIgnoreCase("+24204781414") ))
+       {
+
+       }
+
         SmsRequest smsRequest = new SmsRequest();
         int rd = (int )(Math.random() * 4788 + 7854);
         String sender = "06" + rd ;

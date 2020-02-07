@@ -16,6 +16,41 @@ public class CheckSms {
     Les methodes pour gérer les sms de MTN MM
      */
 
+    public String getNumberMtn(String body) {
+        //Recupère le numéro Mtn qui a effectué la transaction
+        Pattern trouve_num = Pattern.compile("0[456]{1}[0-9]{7}");
+        Matcher num = trouve_num.matcher(body);
+
+        if (num.find()) {
+            // currentMessage.getDisplayOriginatingAddress();
+
+            String senderAddress = num.group(0);
+            Log.d(TAG, "Prends MTN " + senderAddress );
+            return senderAddress;
+        }
+        else{
+            Log.e(TAG, "Erreur sur le numero mtn");
+            return "Something went wrong numero mtn";
+        }
+    }
+
+    public String getAmountMTN(String body){
+
+        Pattern pattern = Pattern.compile("recu(.*?)xaf");
+        Matcher match = pattern.matcher(body);
+
+        if(match.find()){
+            String montant = match.group(1);
+            Log.d(TAG, "Montant " + montant );
+            return montant;
+        }
+        else {
+            Log.e(TAG, "Erreur sur le montant ");
+            return "Something went wrong montant mtn";
+        }
+    }
+
+
     public String getNumber(String body) {
         //Recupère le numéro Mtn qui a effectué la transaction
         Pattern trouve_num = Pattern.compile("0[456]{1}[0-9]{7}");
