@@ -238,7 +238,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Content created", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Contenu crée", Toast.LENGTH_SHORT).show();
+                    sharedPrefManager.saveSPString(SharedPrefManager.SP_SONG_TITLE, mTitre.getText().toString());
                     mTitre.getText().clear();
                     hideDialog();
                     try {
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
 
                 else {
-                    Toast.makeText(MainActivity.this, "Error non created", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Contenu non crée", Toast.LENGTH_SHORT).show();
                     hideDialog();
 
 

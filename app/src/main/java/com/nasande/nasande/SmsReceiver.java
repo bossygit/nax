@@ -34,6 +34,8 @@ public class SmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        Toast.makeText(context, "Message recu", Toast.LENGTH_SHORT).show();
+
         final Bundle bundle = intent.getExtras();
 
 
@@ -47,35 +49,6 @@ public class SmsReceiver extends BroadcastReceiver {
         message = currentMessage.getDisplayMessageBody().toLowerCase();
         String reseau = currentMessage.getDisplayOriginatingAddress();
 
-       if(message.contains("recu") && (reseau.equalsIgnoreCase("MobileMoeny") || reseau.equalsIgnoreCase("+24204781414") ))
-       {
-
-       }
-
-        SmsRequest smsRequest = new SmsRequest();
-        int rd = (int )(Math.random() * 4788 + 7854);
-        String sender = "06" + rd ;
-        String devise = "FCFA";
-        String montant = "300";
-        String trans_id = "0000";
-        String fname = "Not defined";
-        String lname = "Not defined";
-
-
-        try {
-            JSONObject retour = smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id,SharedPrefManager.SP_USER_ID, context);
-            String numero = retour.getString("numero");
-            String uid = null;
-            uid = retour.getString("user_id");
-            smsRequest.createFichier(numero,SharedPrefManager.SP_SONG_TITLE,SharedPrefManager.SP_SONG_ID,uid,context);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-        Log.d(TAG, "Message recu");
 
 
 
