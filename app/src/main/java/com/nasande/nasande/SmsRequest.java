@@ -31,18 +31,18 @@ public class SmsRequest {
     private static String senderAddress = null;
     private static String devise = null;
     private static String montant = null;
-    private static String numero = null;
+    private static String numero = "";
     private static String titre = null;
     private static String songId = "";
     private static String service = null;
     private static String trans = null;
     private static String fname = null;
     private static String lname = null;
-    private static String identifiant = null;
+    private static String identifiant = "";
     private static String idUser = "1";
-    private static JSONObject retour = null;
+    private static Context con  = null;
 
-    public JSONObject moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id,String UserId, Context context) {
+    public void moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id,String UserId, Context context) {
         message = msg;
         senderAddress = sender;
         devise = currency;
@@ -50,6 +50,7 @@ public class SmsRequest {
         service = operator;
         trans = trans_id;
         idUser = UserId;
+        con = context;
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, URL_POST,
                 new Response.Listener<String>() {
@@ -63,14 +64,21 @@ public class SmsRequest {
                                 identifiant = jObj.getString("numero");
                                 idUser = jObj.getString("id");
 
-                                JSONObject retour = new JSONObject()
-                                                    .put("pass",pass)
-                                                    .put("numero",identifiant)
-                                                    .put("id_user",idUser);
 
-                                String mess = "Rendez-vous sur https://nasande.cg/user/login pour vous connecter. Nom d'utilisteur : "+identifiant +" Mot de passe : "+pass +" .Merci pour la confiance. \n -Nasande.cg";
+
+                                createFichier(numero,SharedPrefManager.SP_SONG_TITLE,SharedPrefManager.SP_SONG_ID,idUser,con);
+
+
+                                String mess = "Allez sur https://nasande.cg/user/login pour vous connecter. Nom d'utilisteur : "+identifiant +" Mot de passe : "+pass +" .Merci pour la confiance. \n -Nasande.cg";
                                 Log.d(TAG,"Taille "+ mess.length() +" Password" +pass +"identifiant "+identifiant );
                                 Log.d(TAG,mess);
+
+                                envoi_sms(mess);
+
+
+
+
+
                             }
 
                         } catch (JSONException e) {
@@ -107,7 +115,7 @@ public class SmsRequest {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         Volley.newRequestQueue(context).add(postRequest);
 
-        return retour;
+
     }
 
     public void createFichier(String number, String title,String idSong,String uid, Context context){
