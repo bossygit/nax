@@ -77,7 +77,7 @@ public class SmsRequest {
                                 identifiant = jObj.getString("numero");
                                 idUser = jObj.getString("id");
 
-                                createFichier(numero,sharedPrefManager.getSpSongTitle(),sharedPrefManager.getSPUserId(),idUser,con);
+                                createFichier(numero,sharedPrefManager.getSpSongTitle(),sharedPrefManager.getSpSongId(),sharedPrefManager.getSPUserId(),con);
 
 
                                 String mess = "Allez sur https://nasande.cg/user/login pour vous connecter. Nom d'utilisteur : "+identifiant +" Mot de passe : "+pass +" .Merci pour la confiance. \n -Nasande.cg";
