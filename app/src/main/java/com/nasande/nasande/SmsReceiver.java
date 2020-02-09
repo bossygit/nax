@@ -62,7 +62,7 @@ public class SmsReceiver extends BroadcastReceiver {
         String fname = "Not defined";
         String lname = "Not defined";
 
-        if(message.contains("recu") && (reseau.equalsIgnoreCase("MobileMoney") || reseau.equalsIgnoreCase("+242064781414") ))
+        if(message.contains("recu") && (reseau.equalsIgnoreCase("MobileMoney") || reseau.equalsIgnoreCase("+242064781414") || reseau.equalsIgnoreCase("+242056332008")  ))
         {
             sharedPrefManager = new SharedPrefManager(context);
             CheckSms smss = new CheckSms();
