@@ -182,8 +182,8 @@ public class SmsRequest {
     }
 
     public void envoi_sms(String message) {
-        Log.d(TAG,"Numero :"+senderAddress);
-        Toast.makeText(con, "Message recu", Toast.LENGTH_SHORT).show();
+        Log.d(TAG,"Envoi de sms au : "+senderAddress);
+        Toast.makeText(con, "Envoi de sms au " + senderAddress, Toast.LENGTH_SHORT).show();
 
         SmsManager.getDefault().sendTextMessage("+242"+senderAddress,"", message, null, null);
     }
