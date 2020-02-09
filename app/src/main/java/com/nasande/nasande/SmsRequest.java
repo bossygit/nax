@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SmsRequest {
-    public SmsRequest() {
-    }
+
 
     public static final String URL_POST = "http://nasande.cg/process";
     public static final String URL_FICHIER = "http://nasande.cg/fichier";
@@ -41,6 +40,16 @@ public class SmsRequest {
     private static String identifiant = "";
     private static String idUser = "1";
     private static Context con  = null;
+    SharedPrefManager sharedPrefManager;
+
+    public SmsRequest() {
+    }
+
+    public SmsRequest(Context ctxt) {
+
+        sharedPrefManager = new SharedPrefManager(ctxt);
+        con = ctxt;
+    }
 
     public void moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id,String UserId, Context context) {
         message = msg;
@@ -50,7 +59,11 @@ public class SmsRequest {
         service = operator;
         trans = trans_id;
         idUser = UserId;
-        con = context;
+
+
+
+
+
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, URL_POST,
                 new Response.Listener<String>() {
@@ -64,9 +77,7 @@ public class SmsRequest {
                                 identifiant = jObj.getString("numero");
                                 idUser = jObj.getString("id");
 
-
-
-                                createFichier(numero,SharedPrefManager.SP_SONG_TITLE,SharedPrefManager.SP_SONG_ID,idUser,con);
+                                createFichier(numero,sharedPrefManager.getSpSongTitle(),sharedPrefManager.getSPUserId(),idUser,con);
 
 
                                 String mess = "Allez sur https://nasande.cg/user/login pour vous connecter. Nom d'utilisteur : "+identifiant +" Mot de passe : "+pass +" .Merci pour la confiance. \n -Nasande.cg";
@@ -118,7 +129,7 @@ public class SmsRequest {
 
     }
 
-    public void createFichier(String number, String title,String idSong,String uid, Context context){
+    private void createFichier(String number, String title,String idSong,String uid, Context context){
 
         numero = number;
         titre = title;
@@ -172,8 +183,9 @@ public class SmsRequest {
 
     public void envoi_sms(String message) {
         Log.d(TAG,"Numero :"+senderAddress);
+        Toast.makeText(con, "Message recu", Toast.LENGTH_SHORT).show();
 
-        SmsManager.getDefault().sendTextMessage("+242"+senderAddress,"+24206660016", message, null, null);
+        SmsManager.getDefault().sendTextMessage("+242"+senderAddress,"", message, null, null);
     }
 }
 

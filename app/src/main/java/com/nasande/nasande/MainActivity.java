@@ -84,8 +84,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mProgressDialog.setMessage("Envois ...");
         onTitle = findViewById(R.id.on_title);
 
+        if(sharedPrefManager.getSpSongTitle() != "spSonTitle"){
+            onTitle.setText(sharedPrefManager.getSpSongTitle() );
+        }
 
-        onTitle.setText(sharedPrefManager.SP_SONG_TITLE );
 
 
         getSmsPerms();

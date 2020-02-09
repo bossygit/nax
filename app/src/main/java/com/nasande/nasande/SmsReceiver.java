@@ -46,14 +46,15 @@ public class SmsReceiver extends BroadcastReceiver {
             }
 
         }
-        // message = currentMessage.getDisplayMessageBody().toLowerCase();
+
 
 
         String reseau = currentMessage.getDisplayOriginatingAddress();
+        message = currentMessage.getDisplayMessageBody().toLowerCase();
 
-        SmsRequest smsRequest = new SmsRequest();
-        int rd = (int )(Math.random() * 4788421 + 7854123);
-        message = "Vous avez recu 600 XAF du 24206"+rd+" sur votre compte Mobile Money";
+        SmsRequest smsRequest = new SmsRequest(context);
+
+
 
         String devise = "FCFA";
 
@@ -61,23 +62,34 @@ public class SmsReceiver extends BroadcastReceiver {
         String fname = "Not defined";
         String lname = "Not defined";
 
-        if(message.contains("recu") )
+        if(message.contains("recu") && (reseau.equalsIgnoreCase("MobileMoney") || reseau.equalsIgnoreCase("+242064781414") ))
         {
+            sharedPrefManager = new SharedPrefManager(context);
+            CheckSms smss = new CheckSms();
+            String sender = smss.getNumberMtn(message);
+
+            String montant = smss.getAmountMTN(message);
+
+            smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id,sharedPrefManager.getSPUserId(), context);
+
+
+        }
+
+        else if(reseau.equalsIgnoreCase("161") )
+        {
+            sharedPrefManager = new SharedPrefManager(context);
+            int rd = (int )(Math.random() * 4788421 + 7854123);
+            message = "Vous avez recu 600 XAF du 24206"+rd+" sur votre compte Mobile Money";
             CheckSms smss = new CheckSms();
 
             String sender = smss.getNumberMtn(message);
 
             String montant = smss.getAmountMTN(message);
 
-            smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id,SharedPrefManager.SP_USER_ID, context);
-
+            smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id,sharedPrefManager.getSPUserId(), context);
 
 
         }
-
-
-
-
 
 
     }
