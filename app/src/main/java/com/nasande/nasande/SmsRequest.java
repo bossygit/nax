@@ -52,6 +52,7 @@ public class SmsRequest {
     }
 
     public void moneySms(String msg, String sender,String operator, String currency, String amount, String trans_id,String UserId, Context context) {
+        Log.d(TAG,"Money sms");
         message = msg;
         senderAddress = sender;
         devise = currency;

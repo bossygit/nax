@@ -34,7 +34,7 @@ public class SmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Toast.makeText(context, "Message recu", Toast.LENGTH_SHORT).show();
+        Log.d(TAG,"Message recu");
 
         final Bundle bundle = intent.getExtras();
 
@@ -77,9 +77,12 @@ public class SmsReceiver extends BroadcastReceiver {
 
         else if(reseau.equalsIgnoreCase("161") )
         {
+            Log.d(TAG,"Dans le bloc debug 161");
             sharedPrefManager = new SharedPrefManager(context);
             int rd = (int )(Math.random() * 4788421 + 7854123);
             message = "Vous avez recu 600 XAF du 24206"+rd+" sur votre compte Mobile Money";
+
+            message = message.toLowerCase();
             CheckSms smss = new CheckSms();
 
             String sender = smss.getNumberMtn(message);
