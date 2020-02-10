@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @AfterPermissionGranted(2000)
     private void getSmsPerms(){
-        String[] perms = {Manifest.permission.RECEIVE_SMS};
+        String[] perms = {Manifest.permission.RECEIVE_SMS,Manifest.permission.SEND_SMS};
         if(EasyPermissions.hasPermissions(MainActivity.this,perms)){
 
             Toast.makeText(MainActivity.this, "Peu recevoir des messages", Toast.LENGTH_SHORT).show();
