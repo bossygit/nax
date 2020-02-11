@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         title.add(0, new Title(mTitre.getText().toString()));
         ArrayList<Fichier>  field_fichier_audio = new ArrayList<>();
-        field_fichier_audio.add(0,new Fichier(24));
+        field_fichier_audio.add(0,new Fichier(fid));
 
         Node node = new Node(title,field_fichier_audio);
         mApiInstance = new RetrofitInstance().ObtenirInstance();

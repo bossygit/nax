@@ -21,9 +21,8 @@ import java.util.Map;
 public class SmsRequest {
 
 
-    public static final String URL_POST = "http://nasande.cg/process";
-    public static final String URL_FICHIER = "http://nasande.cg/fichier";
-    public static final String SUCCESS_MSG = "Transfert reçu, Cliquez sur continuer à l'étape suivante. Merci pour la confiance. \n - Nasande.cg";
+    private static final String URL_POST = "http://nasande.cg/process";
+    private static final String URL_FICHIER = "http://nasande.cg/fichier";
     private static final String TAG = SmsRequest.class.getSimpleName();
     private static final int MY_SOCKET_TIMEOUT_MS = 6000;
     private static String message = null;
@@ -39,7 +38,7 @@ public class SmsRequest {
     private static String lname = null;
     private static String identifiant = "";
     private static String idUser = "1";
-    private static Context con  = null;
+    private Context con  = null;
     SharedPrefManager sharedPrefManager;
 
     public SmsRequest() {
@@ -77,6 +76,8 @@ public class SmsRequest {
                                 String pass = jObj.getString("pass");
                                 identifiant = jObj.getString("numero");
                                 idUser = jObj.getString("id");
+                                Log.d(TAG,"Id du client"+jObj.getString("id"));
+                                Log.d(TAG,"Numero du client"+jObj.getString("numero"));
 
                                 createFichier(numero,sharedPrefManager.getSpSongTitle(),sharedPrefManager.getSpSongId(),sharedPrefManager.getSPUserId(),con);
 
@@ -116,7 +117,7 @@ public class SmsRequest {
                 params.put("montant", montant);
                 params.put("operator", service);
                 params.put("trans_id", trans);
-                params.put("user_id", idUser);
+                params.put("user_id", sharedPrefManager.getSPUserId());
 
                 return params;
             }
@@ -184,7 +185,6 @@ public class SmsRequest {
 
     public void envoi_sms(String message) {
         Log.d(TAG,"Envoi de sms au : "+senderAddress);
-        Toast.makeText(con, "Envoi de sms au " + senderAddress, Toast.LENGTH_SHORT).show();
 
         SmsManager.getDefault().sendTextMessage("+242"+senderAddress,"", message, null, null);
     }
