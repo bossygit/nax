@@ -242,7 +242,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 if (response.isSuccessful()){
                     Toast.makeText(MainActivity.this, "Contenu crée", Toast.LENGTH_SHORT).show();
                     sharedPrefManager.saveSPString(SharedPrefManager.SP_SONG_TITLE, mTitre.getText().toString());
+                    onTitle.setText(mTitre.getText().toString());
                     mTitre.getText().clear();
+
                     hideDialog();
                     try {
                         String reponse = response.body().string();
