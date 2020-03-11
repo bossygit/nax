@@ -4,7 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,6 +21,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -30,6 +34,8 @@ public class SmsReceiver extends BroadcastReceiver {
     private static String message = null;
     private ApiService mApiInstance;
     SharedPrefManager sharedPrefManager;
+    final ArrayList<Integer> simCardList = new ArrayList<>();
+    SubscriptionManager subscriptionManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -79,17 +85,34 @@ public class SmsReceiver extends BroadcastReceiver {
         {
             Log.d(TAG,"Dans le bloc debug 161");
             sharedPrefManager = new SharedPrefManager(context);
-            int rd = (int )(Math.random() * 4788421 + 7854123);
-            message = "Vous avez recu 600 XAF du 24206"+rd+" sur votre compte Mobile Money";
+            //int rd = (int )(Math.random() * 4788421 + 7854123);
+            //message = "Vous avez recu 600 XAF du 24206"+rd+" sur votre compte Mobile Money";
 
-            message = message.toLowerCase();
-            CheckSms smss = new CheckSms();
+           // message = message.toLowerCase();
+            //CheckSms smss = new CheckSms();
 
-            String sender = smss.getNumberMtn(message);
+           // String sender = smss.getNumberMtn(message);
 
-            String montant = smss.getAmountMTN(message);
+            //String montant = smss.getAmountMTN(message);
 
-            smsRequest.moneySms("Message", sender, "Reseau", devise, montant,trans_id,sharedPrefManager.getSPUserId(), context);
+            subscriptionManager = SubscriptionManager.from(context);
+            final List<SubscriptionInfo> subscriptionInfoList;
+            try {
+                subscriptionInfoList = subscriptionManager.getActiveSubscriptionInfoList();
+                for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+                    int subscriptionId = subscriptionInfo.getSubscriptionId();
+                    simCardList.add(subscriptionId);
+                }
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+
+            int smsToSendFrom = simCardList.get(0);
+            SmsManager.getSmsManagerForSubscriptionId(smsToSendFrom).sendTextMessage("+242056332008","","Envois message",null,null);
+
+
+
+
 
 
         }

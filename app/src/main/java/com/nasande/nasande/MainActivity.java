@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         getSmsPerms();
 
+        getSimPerms();
+
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -152,7 +154,23 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
 
         else {
-            EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de lire les sms entrant",1000,perms);
+            EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de lire les sms entrant",2000,perms);
+        }
+    }
+
+
+    @AfterPermissionGranted(3000)
+    private void getSimPerms(){
+        String[] perms = {Manifest.permission.READ_PHONE_STATE};
+        if(EasyPermissions.hasPermissions(MainActivity.this,perms)){
+
+
+            Log.d("Permissions","Lire sim config");
+
+        }
+
+        else {
+            EasyPermissions.requestPermissions(MainActivity.this,"Nous avons besoin de lire la configuration des sims",3000,perms);
         }
     }
 
