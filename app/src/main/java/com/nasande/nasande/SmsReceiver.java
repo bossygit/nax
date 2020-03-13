@@ -95,20 +95,8 @@ public class SmsReceiver extends BroadcastReceiver {
 
             //String montant = smss.getAmountMTN(message);
 
-            subscriptionManager = SubscriptionManager.from(context);
-            final List<SubscriptionInfo> subscriptionInfoList;
-            try {
-                subscriptionInfoList = subscriptionManager.getActiveSubscriptionInfoList();
-                for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
-                    int subscriptionId = subscriptionInfo.getSubscriptionId();
-                    simCardList.add(subscriptionId);
-                }
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
 
-            int smsToSendFrom = simCardList.get(0);
-            SmsManager.getSmsManagerForSubscriptionId(smsToSendFrom).sendTextMessage("+242056332008","","Envois message",null,null);
+
 
 
 

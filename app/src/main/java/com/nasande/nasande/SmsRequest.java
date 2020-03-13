@@ -2,6 +2,8 @@ package com.nasande.nasande;
 
 import android.content.Context;
 import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,7 +17,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SmsRequest {
@@ -40,6 +44,8 @@ public class SmsRequest {
     private static String idUser = "1";
     private Context con  = null;
     SharedPrefManager sharedPrefManager;
+    final ArrayList<Integer> simCardList = new ArrayList<>();
+    SubscriptionManager subscriptionManager;
 
     public SmsRequest() {
     }
@@ -186,7 +192,23 @@ public class SmsRequest {
     public void envoi_sms(String message) {
         Log.d(TAG,"Envoi de sms au : "+senderAddress);
 
-        SmsManager.getDefault().sendTextMessage("+242"+senderAddress,"", message, null, null);
+        subscriptionManager = SubscriptionManager.from(con);
+        final List<SubscriptionInfo> subscriptionInfoList;
+        try {
+            subscriptionInfoList = subscriptionManager.getActiveSubscriptionInfoList();
+            for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+                int subscriptionId = subscriptionInfo.getSubscriptionId();
+                simCardList.add(subscriptionId);
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+
+        int smsToSendFrom = simCardList.get(0);
+        SmsManager.getSmsManagerForSubscriptionId(smsToSendFrom).sendTextMessage("+242"+senderAddress,"",message,null,null);
+
+
+        //SmsManager.getDefault().sendTextMessage("+242"+senderAddress,"", message, null, null);
     }
 }
 
